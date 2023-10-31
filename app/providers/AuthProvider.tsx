@@ -8,7 +8,6 @@ import {
 	useEffect,
 	useState
 } from 'react'
-import { Text, View } from 'react-native'
 import { IUser } from '@/types/user.interface'
 
 export type TypeUserState = IUser | null
@@ -23,16 +22,30 @@ export const AuthContext = createContext({} as IContext)
 let ignore = Splash.preventAutoHideAsync()
 
 const AuthProvider: FC<PropsWithChildren<unknown>> = ({ children }) => {
-	const [user, setUser] = useState<TypeUserState>(null)
+	const [user, setUser] = useState<TypeUserState>({} as IUser)
 
 	useEffect(() => {
-		// Get user from async storage and write to store
+		let isMounted = false
+
+		const getUserFromStorage = async () => {
+			if (isMounted) {
+				// Get user from async storage and write to store
+			}
+
+			await Splash.hideAsync()
+		}
+
+		let ignore = getUserFromStorage()
+
+		return () => {
+			isMounted = false
+		}
 	}, [])
 
 	return (
-		<View>
-			<Text>AuthProvider</Text>
-		</View>
+		<AuthContext.Provider value={{ user, setUser }}>
+			{children}
+		</AuthContext.Provider>
 	)
 }
 
