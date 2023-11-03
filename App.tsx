@@ -8,6 +8,7 @@ const queryClient = new QueryClient()
 
 /*
 TODO:
+[x] - Auth form
 [] - Customize flow, break, session count
 [] - Reset
 [] - Day name
@@ -15,7 +16,7 @@ TODO:
 [] - Skip flow
 [] - Week/mouth statistics
 
-Timer, Settings + profile, statistics, anim
+Timer, Settings, statistics, anim
 */
 
 export default function App() {
