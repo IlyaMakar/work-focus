@@ -1,4 +1,5 @@
 export enum EnumStatus {
-	REST = 'rest',
-	WORK = 'work'
+	REST = 'Отдыхай',
+	WORK = 'Работай',
+	COMPLETED = 'ПРЕВОСХОДНО'
 }

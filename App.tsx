@@ -8,12 +8,9 @@ const queryClient = new QueryClient()
 
 /*
 TODO:
-[x] - Auth form
-[] - Customize flow, break, session count
 [] - Reset
-[] - Day name
-[] - Play/Pause
 [] - Skip flow
+[] - Customize flow, break, session count
 [] - Week/mouth statistics
 
 Timer, Settings, statistics, anim
