@@ -81,13 +81,14 @@ const Timer: FC = () => {
 						<View className='flex-row items-center' key={`point ${index}`}>
 							<View
 								className={cn(
-									'w-5 h-5 opacity-60 rounded-full border-[3px]',
+									'w-5 h-5 rounded-full border-[3px]',
 									index + 1 === currentSession
-										? 'w-[22px] h-[22px] border-[#FDB827] bg-transparent'
-										: 'w-5 h-5 border-transparent bg-[#696969]',
+										? 'border-primary bg-transparent'
+										: 'border-transparent bg-[#696969] opacity-60',
 									{
 										'bg-primary opacity-60':
-											index + 1 <= currentSession && index + 1 !== sessionCount
+											index + 1 <= currentSession &&
+											index + 1 !== currentSession
 									}
 								)}
 							/>
