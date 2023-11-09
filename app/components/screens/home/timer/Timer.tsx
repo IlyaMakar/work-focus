@@ -1,6 +1,6 @@
-import { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
-import { Foundation } from '@expo/vector-icons'
+import { Entypo, Foundation } from '@expo/vector-icons'
 import cn from 'clsx'
 import { AppConstants } from '@/app.constants'
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer'
@@ -10,7 +10,7 @@ const flowDuration = 10
 const sessionCount = 7
 const breakDuration = 1 * 60
 
-//TODO: Добавить стелочки для скипа кругов
+const isSmallIndicator = sessionCount > 7
 
 const Timer: FC = () => {
 	const [isPlaying, setIsPlaying] = useState(false)
@@ -29,7 +29,7 @@ const Timer: FC = () => {
 
 	return (
 		<View className='justify-center flex-1 '>
-			<View className='self-center'>
+			<View className='self-center items-center'>
 				<CountdownCircleTimer
 					key={key}
 					isPlaying={isPlaying}
@@ -66,11 +66,22 @@ const Timer: FC = () => {
 						seconds = seconds < 10 ? '0' + seconds : seconds
 
 						return (
-							<View className='mt-5'>
+							<View className='mt-14'>
 								<Text className=' text-white text-5xl font-semibold'>{`${minutes}:${seconds}`}</Text>
 								<Text className='text-center text-2xl text-white mt-0.5'>
 									{status}
 								</Text>
+
+								<Pressable
+									onPress={() => {
+										setKey(0)
+										setIsPlaying(false)
+										setCurrentSession(1)
+									}}
+									className='opacity-40 self-center mt-5'
+								>
+									<Entypo name='ccw' size={30} color='white' />
+								</Pressable>
 							</View>
 						)
 					}}
@@ -81,10 +92,16 @@ const Timer: FC = () => {
 						<View className='flex-row items-center' key={`point ${index}`}>
 							<View
 								className={cn(
-									'w-5 h-5 rounded-full border-[3px]',
+									'rounded-full border-[2px]',
 									index + 1 === currentSession
-										? 'border-primary bg-transparent'
-										: 'border-transparent bg-[#696969] opacity-60',
+										? `bg-transparent border-primary ${
+												isSmallIndicator
+													? 'w-[17px] h-[17px]'
+													: 'w-[22px] h-[22px]'
+										  } `
+										: `border-transparent bg-[#696969] opacity-60 ${
+												isSmallIndicator ? 'w-[15px] h-[15px]' : 'w-5 h-5'
+										  }`,
 									{
 										'bg-primary opacity-60':
 											index + 1 <= currentSession &&
@@ -94,40 +111,73 @@ const Timer: FC = () => {
 							/>
 							{index + 1 !== sessionCount && (
 								<View
-									className={cn('w-6 h-0.5 bg-[#696969] opacity-60', {
-										'bg-primary opacity-60': index + 2 <= currentSession
-									})}
+									className={cn(
+										'h-0.5 bg-[#696969] opacity-60',
+										{
+											'bg-primary opacity-60': index + 2 <= currentSession
+										},
+										isSmallIndicator ? 'w-5 ' : 'w-7'
+									)}
 								/>
 							)}
 						</View>
 					))}
 				</View>
 			</View>
-			<Pressable
-				onPress={() => setIsPlaying(!isPlaying)}
-				className={cn(
-					'self-center mt-10 bg-primary w-[65] h-[65] rounded-full items-center justify-center',
-					{
-						'pl-1.5': !isPlaying
-					}
-				)}
-				style={{
-					shadowColor: AppConstants.primary,
-					shadowOffset: {
-						width: 0,
-						height: 4
-					},
-					shadowOpacity: 0.6,
-					shadowRadius: 8,
-					elevation: 20
-				}}
-			>
-				<Foundation
-					name={isPlaying ? 'pause' : 'play'}
-					color='white'
-					size={44}
-				/>
-			</Pressable>
+
+			<View className='flex-row items-center justify-center mt-14 relative'>
+				<Pressable
+					onPress={() => {
+						if (currentSession !== 1) {
+							setCurrentSession(prev => prev - 1)
+							setKey(prev => prev - 1)
+							setIsPlaying(false)
+						}
+					}}
+					className='opacity-40'
+				>
+					<Entypo name='chevron-left' size={34} color='white' />
+				</Pressable>
+
+				<Pressable
+					onPress={() => setIsPlaying(!isPlaying)}
+					className={cn(
+						'mx-7 bg-primary w-[65] h-[65] rounded-full items-center justify-center',
+						{
+							'pl-1.5': !isPlaying
+						}
+					)}
+					style={{
+						shadowColor: AppConstants.primary,
+						shadowOffset: {
+							width: 0,
+							height: 4
+						},
+						shadowOpacity: 0.6,
+						shadowRadius: 8,
+						elevation: 20
+					}}
+				>
+					<Foundation
+						name={isPlaying ? 'pause' : 'play'}
+						color='white'
+						size={44}
+					/>
+				</Pressable>
+
+				<Pressable
+					onPress={() => {
+						if (currentSession !== sessionCount + 1) {
+							setCurrentSession(prev => prev + 1)
+							setKey(prev => prev + 1)
+							setIsPlaying(false)
+						}
+					}}
+					className='opacity-40'
+				>
+					<Entypo name='chevron-right' size={34} color='white' />
+				</Pressable>
+			</View>
 		</View>
 	)
 }
