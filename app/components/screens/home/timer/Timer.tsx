@@ -78,7 +78,7 @@ const Timer: FC = () => {
 										setIsPlaying(false)
 										setCurrentSession(1)
 									}}
-									className='opacity-40 self-center mt-5'
+									className='opacity-40 self-center mt-6'
 								>
 									<Entypo name='ccw' size={30} color='white' />
 								</Pressable>
