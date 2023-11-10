@@ -1,29 +1,25 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
-import { Entypo, Foundation } from '@expo/vector-icons'
+import { AntDesign, Entypo, Foundation } from '@expo/vector-icons'
 import cn from 'clsx'
 import { AppConstants } from '@/app.constants'
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer'
 import { EnumStatus } from '@/components/screens/home/timer/timer.interface'
 
-const flowDuration = 10
-const sessionCount = 7
-const breakDuration = 1 * 60
+const flowDuration = 5
+const sessionCount = 10
+const breakDuration = 7
 
 const isSmallIndicator = sessionCount > 7
 
 const Timer: FC = () => {
 	const [isPlaying, setIsPlaying] = useState(false)
-	const [status, setStatus] = useState<EnumStatus>(EnumStatus.REST)
-	const [currentSession, setCurrentSession] = useState(1)
-	const [key, setKey] = useState(0)
+	const [status, setStatus] = useState<EnumStatus>(EnumStatus.WORK)
 
-	useEffect(() => {
-		if (isPlaying && status === EnumStatus.REST) {
-			setKey(prev => prev + 1)
-			setStatus(EnumStatus.WORK)
-		}
-	}, [isPlaying])
+	const [currentSession, setCurrentSession] = useState(1)
+	const [currentBreak, setCurrentBreake] = useState(0)
+
+	const [key, setKey] = useState(0)
 
 	const isAllSessionsComplited = currentSession === sessionCount
 
@@ -33,25 +29,37 @@ const Timer: FC = () => {
 				<CountdownCircleTimer
 					key={key}
 					isPlaying={isPlaying}
-					duration={flowDuration}
+					duration={status === EnumStatus.REST ? breakDuration : flowDuration}
 					colors={['#E3BC6F', '#E89D00']}
-					colorsTime={[flowDuration, 0]}
+					colorsTime={[
+						status === EnumStatus.REST ? breakDuration : flowDuration,
+						0
+					]}
 					trailColor='#5C461A'
 					onComplete={() => {
 						setIsPlaying(false)
-						setCurrentSession(prev => prev + 1)
-						setStatus(EnumStatus.REST)
 
 						if (isAllSessionsComplited) {
 							//TODO: Anim
 							setStatus(EnumStatus.COMPLETED)
 						}
+
+						setKey(prev => prev + 1)
+
+						if (status === EnumStatus.REST) {
+							setStatus(EnumStatus.WORK)
+							setCurrentSession(prev => prev + 1)
+						}
+
+						if (currentSession % 2 === 0) {
+							setStatus(EnumStatus.REST)
+							setCurrentBreake(prev => prev + 1)
+						} else {
+							setCurrentSession(prev => prev + 1)
+						}
 					}}
 					size={300}
 					strokeWidth={10}
-					onUpdate={remainingTime => {
-						if (!!remainingTime) setStatus(EnumStatus.WORK)
-					}}
 				>
 					{({ remainingTime }) => {
 						let minutes: string | number = Math.floor(remainingTime / 60)
@@ -77,6 +85,7 @@ const Timer: FC = () => {
 										setKey(0)
 										setIsPlaying(false)
 										setCurrentSession(1)
+										setCurrentBreake(0)
 									}}
 									className='opacity-40 self-center mt-6'
 								>
@@ -94,21 +103,32 @@ const Timer: FC = () => {
 								className={cn(
 									'rounded-full border-[2px]',
 									index + 1 === currentSession
-										? `bg-transparent border-primary ${
-												isSmallIndicator
-													? 'w-[17px] h-[17px]'
-													: 'w-[22px] h-[22px]'
-										  } `
-										: `border-transparent bg-[#696969] opacity-60 ${
-												isSmallIndicator ? 'w-[15px] h-[15px]' : 'w-5 h-5'
-										  }`,
+										? 'bg-transparent border-primary'
+										: 'border-transparent bg-[#696969] opacity-60',
 									{
 										'bg-primary opacity-60':
 											index + 1 <= currentSession &&
 											index + 1 !== currentSession
-									}
+									},
+									isSmallIndicator ? 'w-[15px] h-[15px]' : 'w-5 h-5'
 								)}
 							/>
+							{(index + 1) % 2 === 0 && index + 1 !== sessionCount && (
+								<View
+									className={cn(
+										'absolute z-10 -top-4 ',
+										isSmallIndicator ? 'left-[17px]' : 'left-6'
+									)}
+								>
+									<AntDesign
+										name='rest'
+										size={isSmallIndicator ? 16 : 18}
+										color={index / 2 < currentBreak ? '#FDB827' : '#696969'}
+										className='absolute'
+									/>
+								</View>
+							)}
+
 							{index + 1 !== sessionCount && (
 								<View
 									className={cn(
@@ -132,6 +152,8 @@ const Timer: FC = () => {
 							setCurrentSession(prev => prev - 1)
 							setKey(prev => prev - 1)
 							setIsPlaying(false)
+
+							currentSession % 2 && setCurrentBreake(prev => prev - 1)
 						}
 					}}
 					className='opacity-40'
@@ -170,6 +192,7 @@ const Timer: FC = () => {
 						if (currentSession !== sessionCount + 1) {
 							setCurrentSession(prev => prev + 1)
 							setKey(prev => prev + 1)
+							currentSession % 2 === 0 && setCurrentBreake(prev => prev + 1)
 							setIsPlaying(false)
 						}
 					}}
